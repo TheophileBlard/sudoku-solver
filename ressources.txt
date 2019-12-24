@@ -1,0 +1,23 @@
+BLOG:
+
+http://jmcglone.com/guides/github-pages/
+
+SUDOKU:
+
+https://hackernoon.com/sudoku-solver-w-golang-opencv-3-2-3972ed3baae2
+http://aishack.in/tutorials/sudoku-grabber-opencv-extracting-digits/
+https://medium.com/@neshpatel/solving-sudoku-part-ii-9a7019d196a2
+https://github.com/MrEliptik/SudokuResolver
+https://github.com/mineshpatel1/sudoku-solver/tree/master/data/images/grid/all
+https://icosys.ch/sudoku-dataset
+https://github.com/wichtounet/sudoku_dataset
+https://github.com/mathworks/deep-sudoku-solver (matlab)
+
+SOLVING:
+
+https://www.kaggle.com/bryanpark/sudoku
+https://medium.com/@josef_44177/sudoku-rnn-in-pytorch-d1fddef850a8
+
+CLASSIF :
+
+https://kapernikov.com/tutorial-image-classification-with-scikit-learn/
