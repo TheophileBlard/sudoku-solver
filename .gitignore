@@ -1,7 +1,8 @@
 # Project specifics
 
+.vscode/
 models/
-
+datasets/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

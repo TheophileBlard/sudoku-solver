@@ -1,1 +1,0 @@
-#TODO: sudoku detection (DL)
