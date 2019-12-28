@@ -8,19 +8,20 @@ class DigitClassifier(ABC):
     def classify(self, img_digits):
         pass
 
-    def predict(self, img_digits, preprocessing_func=None):
-        if preprocessing_func:
-            img_digits = preprocessing_func(img_digits)        
+    def predict(self, img_digits, preprocessing_func=None):                
         return self.classify(img_digits)
 
 
-class ScikitClassifier(DigitClassifier):
+class ScikitLearnClassifier(DigitClassifier):
     def __init__(self, model_path):
-        self.model = joblib.load(model_path)
-        pass
+        data = joblib.load(model_path)        
+        self.model = data["model"]
+        if 'scaler' in data:
+            self.scaler = data["scaler"]
         
-    def classify(self, img_digits):
-        #TODO: should use save model
-        #output = self.model.predict(img_digits[0][0])
-        output = np.zeros((9,9))      
-        return output.astype(np.uint8)
+        
+    def classify(self, img_digit):        
+        #if self.scaler:
+        #    img_digit = self.scaler.transform([img_digit, ])[0]        
+        output = self.model.predict([img_digit, ])        
+        return output
