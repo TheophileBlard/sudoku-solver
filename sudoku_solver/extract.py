@@ -17,71 +17,6 @@ class GridExtractor(ABC):
         pass
 
 
-#
-
-from skimage.measure import label, regionprops
-from skimage.transform import resize
-from skimage import util
-
-def chars74_preprocessing(digit):  
-
-    preprocess_img = rgb2gray(digit)
-    
-    w, h = preprocess_img.shape[:2]
-    win_size = int(w // 1.5)
-    if win_size % 2 == 0:
-        win_size += 1
-    
-    # use otsu or something fast here
-    binary_img = binarise(preprocess_img, window_size=win_size, dilate=True)
-
-    # remove artifacts connected to image border
-    cleared = binary_img #clear_border(binary_img)   
-   
-    label_image = label(cleared)
-   
-    def distance(tuple_1, tuple_2):
-        return np.abs(tuple_1[0] - tuple_2[0]) + np.abs(tuple_1[1] - tuple_2[1])
-
-    def is_digit(region, center, w, h):        
-        return (region.eccentricity < 0.99 and
-                distance(region.centroid, center) < w / 2.5 and                
-                region.bbox_area < (w*h) / 2 and
-                region.bbox_area > (w*h) / 30)
-
-    center = (w / 2, h / 2)    
-    props = [r for r in regionprops(label_image) if is_digit(r, center, w, h)]
-    region = None
-    if len(props) == 0:
-        return np.zeros((64, 64)), False # TODO: return black image (+ indicateur ?)
-    if len(props) == 1:
-        region = props[0]
-    else:
-        print('multiple region !')
-        region = sorted(props, key=lambda r: distance(r.centroid, center))[0]
-        #raise Exception('houlala')
-
-    minr, minc, maxr, maxc = region.bbox
-    cropped = binary_img[minr:maxr, minc:maxc]
-    w_crop, h_crop = cropped.shape[:2]
-
-    before = abs(w_crop - h_crop) // 2
-    after = abs(w_crop - h_crop) - before
-    
-    if w_crop > h_crop:
-        pad_width = ((0, 0), (before, after))
-    else:
-        pad_width = ((before, after), (0, 0))
-
-    PIX_FRAME = 3    
-    padded = util.pad(cropped, pad_width, mode='constant')
-    padded = resize(padded, (64, 64))
-    #padded = util.pad(padded, ((PIX_FRAME, PIX_FRAME), (PIX_FRAME, PIX_FRAME)))  
-
-    # util.invert(padded)
-    return padded, True
-
-
 # Scikit Image
 
 RESIZE_WIDTH = 1000
@@ -198,7 +133,8 @@ class ScikitImageExtractor(GridExtractor):
             plot_corners(binary_img, grid_corners)
 
         # 5. Apply perspective warp (bird's-eye view)
-        warped_img = perspective_warp(resized_img, grid_corners)
+        binary_img_2 = binarise(preprocess(resized_img, blur_sigma=-1), window_size=51, dilate=True)
+        warped_img = perspective_warp(binary_img_2, grid_corners)
         if self.show_steps:
             plot_img(warped_img)
 

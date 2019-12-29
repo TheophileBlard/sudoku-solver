@@ -4,24 +4,24 @@ import joblib
 
 
 class DigitClassifier(ABC):
-    @abstractmethod
-    def classify(self, img_digits):
-        pass
+    def __init__(self, preproc_fun=None):
+        self.preproc_fun = preproc_fun   
+    
+    def preprocess(self, raw_digit):       
+        return self.preproc_fun(raw_digit)
 
-    def predict(self, img_digits, preprocessing_func=None):                
-        return self.classify(img_digits)
+    @abstractmethod
+    def predict(self, digit_img):
+        pass
 
 
 class ScikitLearnClassifier(DigitClassifier):
-    def __init__(self, model_path):
+    def __init__(self, model_path, preproc_fun=None):
+        super().__init__(preproc_fun)
         data = joblib.load(model_path)        
         self.model = data["model"]
         if 'scaler' in data:
-            self.scaler = data["scaler"]
+            self.scaler = data["scaler"]      
         
-        
-    def classify(self, img_digit):        
-        #if self.scaler:
-        #    img_digit = self.scaler.transform([img_digit, ])[0]        
-        output = self.model.predict([img_digit, ])        
-        return output
+    def predict(self, proc_digit):              
+        return self.model.predict([proc_digit.ravel(), ])[0]
